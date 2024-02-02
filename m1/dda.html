@@ -1,55 +1,67 @@
+@ -0,0 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DDA Line Algorithm</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    #canvas {
-      width: 512px;
-      height: 512px;
-      border: 1px solid black;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>DDA Line Drawing Algorithm</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
 </head>
 <body>
-  <canvas id="canvas"></canvas>
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
 
-    function calculateDDA(x1, y1, x2, y2) {
-      const dx = x2 - x1;
-      const dy = y2 - y1;
-      const steps = Math.max(Math.abs(dx), Math.abs(dy));
+        let startPoint = null;
+        let endPoint = null;
 
-      const xInc = dx / steps;
-      const yInc = dy / steps;
+        canvas.addEventListener("click", (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
 
-      let x = x1;
-      let y = y1;
+            if (!startPoint) {
+                startPoint = { x, y };
+            } else if (!endPoint) {
+                endPoint = { x, y };
+                drawLine(startPoint, endPoint);
+                startPoint = null;
+                endPoint = null;
+            }
+        });
 
-      for (let i = 0; i <= steps; i++) {
-        ctx.fillRect(x, y, 1, 1);
-        x += xInc;
-        y += yInc;
-      }
-    }
+        function drawLine(startPoint, endPoint) {
+            const dx = endPoint.x - startPoint.x;
+            const dy = endPoint.y - startPoint.y;
 
-    canvas.addEventListener('click', (event) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+            const steps = Math.max(Math.abs(dx), Math.abs(dy));
 
-      const startPoint = { x: 0, y: 0 };
-      const endPoint = { x, y };
+            const xInc = dx / steps;
+            const yInc = dy / steps;
 
-      calculateDDA(startPoint.x, startPoint.y, endPoint.x, endPoint.y);
-    });
-  </script>
+            let x = startPoint.x;
+            let y = startPoint.y;
+
+            for (let i = 0; i <= steps; i++) {
+                ctx.putImageData(createImageData(x, y), x, y);
+                x += xInc;
+                y += yInc;
+            }
+        }
+
+        function createImageData(x, y) {
+            const imageData = ctx.createImageData(1, 1);
+            const data = imageData.data;
+            data[0] = 255;
+            data[1] = 0;
+            data[2] = 0;
+            data[3] = 255;
+            return imageData;
+        }
+    </script>
 </body>
 </html>
