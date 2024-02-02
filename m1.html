@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DDA Line Drawing Algorithm</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let startPoint = null;
+        let endPoint = null;
+
+        canvas.addEventListener("dblclick", (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            if (!startPoint) {
+                startPoint = { x, y };
+            } else if (!endPoint) {
+                endPoint = { x, y };
+                drawLine(startPoint, endPoint);
+                startPoint = null;
+                endPoint = null;
+            }
+        });
+
+        function drawLine(startPoint, endPoint) {
+            const dx = endPoint.x - startPoint.x;
+            const dy = endPoint.y - startPoint.y;
+
+            const steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+            const xInc = dx / steps;
+            const yInc = dy / steps;
+
+            let x = startPoint.x;
+            let y = startPoint.y;
+
+            for (let i = 0; i <= steps; i++) {
+                ctx.putImageData(createImageData(x, y), x, y);
+                x += xInc;
+                y += yInc;
+            }
+        }
+
+        function createImageData(x, y) {
+            const imageData = ctx.createImageData(1, 1);
+            const data = imageData.data;
+            data[0] = 255;
+            data[1] = 0;
+            data[2] = 0;
+            data[3] = 255;
+            return imageData;
+        }
+    </script>
+</body>
+</html>
