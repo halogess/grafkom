@@ -3,8 +3,8 @@
   <body>
     <canvas
       id="myCanvas"
-      width="1000"
-      height="1000"
+      width="800"
+      height="500"
       style="border: 1px solid #d3d3d3"
     >
     </canvas>
@@ -7973,7 +7973,7 @@
 
       for (i = 0; i < titik.length; i++) {
         x = (titik[i][0] + 2) * 200;
-        y = (titik[i][1] + 2) * 200;
+        y = 650 - (titik[i][1] + 2) * 200;
         
         ctx.fillRect(x, y, 1, 1);
       }
