@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bresenham Midpoint Algorithm</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #canvas {
+            width: 100vw;
+            height: 100vh;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Menentukan warna garis
+        const color = "#000000";
+
+        // Mendapatkan koordinat klik
+        canvas.addEventListener("click", (event) => {
+            const rect = canvas.getBoundingClientRect();
+            const x1 = event.clientX - rect.left;
+            const y1 = event.clientY - rect.top;
+
+            // Menentukan titik awal dan akhir
+            let x0 = 0, y0 = 0;
+            let x = x1, y = y1;
+
+            // Algoritma Bresenham Midpoint
+            while (x0 <= x) {
+                // Menghitung nilai midpoint
+                const dx = x - x0;
+                const dy = y - y0;
+                const d = 2 * dy - dx;
+
+                // Menentukan piksel yang akan digambar
+                if (d >= 0) {
+                    y = y + 1;
+                    d = d - 2 * dx;
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(x0, y0, 1, 1);
+                x0 = x0 + 1;
+            }
+        });
+    </script>
+</body>
+</html>
