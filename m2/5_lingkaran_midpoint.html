@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <canvas
+      id="myCanvas"
+      width="512"
+      height="512"
+      style="border: 1px solid #d3d3d3"
+    >
+    </canvas>
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var ctx = canvas.getContext("2d");
+      var centerX, centerY, radius;
+      var click = 0;
+
+      canvas.addEventListener(
+        "click",
+        function (event) {
+          click++;
+          if (click === 1) {
+            centerX = event.clientX - canvas.offsetLeft;
+            centerY = event.clientY - canvas.offsetTop;
+          } else if (click === 2) {
+            var x = event.clientX - canvas.offsetLeft;
+            var y = event.clientY - canvas.offsetTop;
+            radius = Math.sqrt(
+              Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+            );
+            drawCircle(centerX, centerY, radius);
+            click = 0;
+          }
+        },
+        false
+      );
+
+      function drawCircle(centerX, centerY, radius) {
+        var x = radius;
+        var y = 0;
+        var err = 0;
+
+        while (x >= y) {
+          drawEightPoints(centerX, centerY, x, y);
+          y += 1;
+          err += 1 + 2 * y;
+          if (2 * (err - x) + 1 > 0) {
+            x -= 1;
+            err += 1 - 2 * x;
+          }
+        }
+      }
+
+      function drawEightPoints(centerX, centerY, x, y) {
+        ctx.fillRect(centerX + x, centerY + y, 1, 1);
+        ctx.fillRect(centerX + y, centerY + x, 1, 1);
+        ctx.fillRect(centerX - y, centerY + x, 1, 1);
+        ctx.fillRect(centerX - x, centerY + y, 1, 1);
+        ctx.fillRect(centerX - x, centerY - y, 1, 1);
+        ctx.fillRect(centerX - y, centerY - x, 1, 1);
+        ctx.fillRect(centerX + y, centerY - x, 1, 1);
+        ctx.fillRect(centerX + x, centerY - y, 1, 1);
+      }
+    </script>
+  </body>
+</html>
