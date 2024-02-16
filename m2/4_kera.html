@@ -3,13 +3,13 @@
   <body>
     <canvas
       id="myCanvas"
-      width="1000"
-      height="1000"
+      width="800"
+      height="500"
       style="border: 1px solid #d3d3d3"
     >
     </canvas>
     <script>
-      (titik = [0.439019, 0.159939]),
+      titik = [[0.439019, 0.159939],
         [-0.439019, 0.159939],
         [0.483073, 0.112847],
         [-0.483073, 0.112847],
@@ -7966,13 +7966,16 @@
         [-0.663207, -0.079646],
         [-0.747717, -0.111062],
         [-0.702205, -0.104642],
-        [-0.659679, -0.09827];
+        [-0.659679, -0.09827]];
 
       var canvas = document.getElementById("myCanvas");
       var ctx = canvas.getContext("2d");
 
       for (i = 0; i < titik.length; i++) {
-        ctx.fillRect(titik[i][0] * 1000, titik[i][1], 1, 1);
+        x = (titik[i][0] + 2) * 200;
+        y = 650 - (titik[i][1] + 2) * 200;
+        
+        ctx.fillRect(x, y, 1, 1);
       }
     </script>
   </body>
