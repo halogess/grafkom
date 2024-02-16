@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menggambar Lingkaran dengan Rumus (x-xc)^2 + (y-yc)^2 = r^2</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #canvas {
+            width: 512px;
+            height: 512px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let r0, r1;
+
+        canvas.addEventListener("click", (e) => {
+            if (!r0) {
+                // Klik pertama
+                r0 = {
+                    x: e.clientX,
+                    y: e.clientY,
+                };
+            } else {
+                // Klik kedua
+                r1 = {
+                    x: e.clientX,
+                    y: e.clientY,
+                };
+
+                // Hitung jarak antara dua titik
+                const d = Math.sqrt((r1.x - r0.x)**2 + (r1.y - r0.y)**2);
+
+                // Hitung jari-jari lingkaran
+                const r = d / 2;
+
+                // Hitung koordinat titik pusat lingkaran
+                const xc = (r0.x + r1.x) / 2;
+                const yc = (r0.y + r1.y) / 2;
+
+                // Gambar lingkaran
+                ctx.beginPath();
+                ctx.arc(xc, yc, r, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Reset nilai r0
+                r0 = null;
+            }
+        });
+    </script>
+</body>
+</html>

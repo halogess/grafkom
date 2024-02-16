@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bresenham Midpoint Circle Drawing Algorithm</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+      width: 512px;
+      height: 512px;
+      background-color: beige;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="512" height="512"></canvas>
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let centerPoint = null;
+
+    // Fungsi untuk menggambar satu pixel
+    function drawPixel(x, y) {
+      const imageData = ctx.createImageData(1, 1);
+      const data = imageData.data;
+      data[0] = 255; // Merah
+      data[1] = 0; // Hijau
+      data[2] = 0; // Biru
+      data[3] = 255; // Alpha
+      ctx.putImageData(imageData, x, y);
+    }
+
+    canvas.addEventListener("click", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      if (!centerPoint) {
+        centerPoint = { x, y };
+        const radius = prompt("Masukkan jari-jari lingkaran:");
+        drawCircleBresenham(centerPoint, parseInt(radius));
+        centerPoint = null;
+      }
+    });
+
+    // Algoritma Bresenham Midpoint untuk menggambar lingkaran
+    function drawCircleBresenham(centerPoint, radius) {
+      let x = 0;
+      let y = radius;
+      let d = 3 - 2 * radius;
+
+      drawPixel(centerPoint.x + x, centerPoint.y + y);
+      drawPixel(centerPoint.x + x, centerPoint.y - y);
+      drawPixel(centerPoint.x - x, centerPoint.y + y);
+      drawPixel(centerPoint.x - x, centerPoint.y - y);
+
+      while (x < y) {
+        if (d < 0) {
+          d += 4 * x + 6;
+        } else {
+          d += 4 * (x - y) + 10;
+          y--;
+        }
+
+        x++;
+
+        drawPixel(centerPoint.x + x, centerPoint.y + y);
+        drawPixel(centerPoint.x + x, centerPoint.y - y);
+        drawPixel(centerPoint.x - x, centerPoint.y + y);
+        drawPixel(centerPoint.x - x, centerPoint.y - y);
+        drawPixel(centerPoint.x + y, centerPoint.x + x);
+        drawPixel(centerPoint.x - y, centerPoint.x + x);
+        drawPixel(centerPoint.x + y, centerPoint.x - x);
+        drawPixel(centerPoint.x - y, centerPoint.x - x);
+      }
+    }
+  </script>
+</body>
+</html>
