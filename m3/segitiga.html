@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Segitiga dan Bounding Box</title>
+    <title>Segitiga dari Klik Mouse</title>
     <style>
         #canvas {
             border: 1px solid #000;
@@ -16,12 +16,10 @@
     <canvas id="canvas" width="500" height="500"></canvas>
 
     <script>
-        // Inisialisasi variabel untuk koordinat titik P1, P2, dan P3
         let points = [];
         let canvas = document.getElementById("canvas");
         let ctx = canvas.getContext("2d");
 
-        // Fungsi untuk menggambar segitiga berdasarkan titik yang diklik
         function drawTriangle() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -32,47 +30,35 @@
             ctx.lineTo(points[2][0], points[2][1]);
             ctx.closePath();
             ctx.stroke();
-
-            // Menggambar bounding box
-            let minX = Math.min(points[0][0], points[1][0], points[2][0]);
-            let minY = Math.min(points[0][1], points[1][1], points[2][1]);
-            let maxX = Math.max(points[0][0], points[1][0], points[2][0]);
-            let maxY = Math.max(points[0][1], points[1][1], points[2][1]);
-
-            ctx.rect(minX, minY, maxX - minX, maxY - minY);
-            ctx.stroke();
         }
 
-        // Fungsi untuk menangani klik pada canvas
         function handleCanvasClick(event) {
             let rect = canvas.getBoundingClientRect();
             let x = event.clientX - rect.left;
             let y = event.clientY - rect.top;
 
-            // Menambahkan koordinat titik baru
             points.push([x, y]);
 
             // Jika sudah diklik 3 kali, gambar segitiga
             if (points.length === 3) {
-                // Periksa dan kalikan dengan -1 jika C1+C2+C3 negatif
+                // Hitung nilai C1, C2, dan C3
                 let C1 = points[0][0] * (points[1][1] - points[2][1]) + points[1][0] * (points[2][1] - points[0][1]) + points[2][0] * (points[0][1] - points[1][1]);
                 let C2 = points[1][0] * (points[2][1] - points[0][1]) + points[2][0] * (points[0][1] - points[1][1]) + points[0][0] * (points[1][1] - points[2][1]);
                 let C3 = points[2][0] * (points[0][1] - points[1][1]) + points[0][0] * (points[1][1] - points[2][1]) + points[1][0] * (points[2][1] - points[0][1]);
 
+                // Jika C1 + C2 + C3 negatif, kalikan A, B, dan C dengan -1
                 if (C1 + C2 + C3 < 0) {
-                    // Kalikan semua A, B, dan C dengan -1
                     points.forEach(point => {
                         point[0] *= -1;
                         point[1] *= -1;
                     });
                 }
 
-                // Gambar segitiga dan bounding box
+                // Gambar segitiga
                 drawTriangle();
             }
         }
 
-        // Menambahkan event listener untuk klik pada canvas
         canvas.addEventListener("click", handleCanvasClick);
     </script>
 </body>

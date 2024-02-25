@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smooth Triangle</title>
+    <style>
+      #myCanvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="512" height="512"></canvas>
+
+    <div>
+      <label for="colorPicker1">Pilih Warna Titik 1:</label>
+      <input type="color" id="colorPicker1" value="#FF0000" />
+      <br />
+      <label for="colorPicker2">Pilih Warna Titik 2:</label>
+      <input type="color" id="colorPicker2" value="#00FF00" />
+      <br />
+      <label for="colorPicker3">Pilih Warna Titik 3:</label>
+      <input type="color" id="colorPicker3" value="#0000FF" />
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var canvas = document.getElementById("myCanvas");
+        var ctx = canvas.getContext("2d");
+
+        // Array untuk menyimpan koordinat titik dan warna
+        var titik = [];
+
+        // Color picker untuk masing-masing titik
+        var colorPicker1 = document.getElementById("colorPicker1");
+        var colorPicker2 = document.getElementById("colorPicker2");
+        var colorPicker3 = document.getElementById("colorPicker3");
+
+        // Fungsi untuk menghitung cross product dari dua vektor
+        function crossProduct(v1, v2) {
+          var x = v1.y * v2.z - v1.z * v2.y;
+          var y = v1.z * v2.x - v1.x * v2.z;
+          var z = v1.x * v2.y - v1.y * v2.x;
+          return { x: x, y: y, z: z };
+        }
+
+        // Fungsi untuk menghitung persamaan bidang
+        function hitungPersamaanBidang(titik1, titik2, titik3, komponen) {
+          var v1 = {
+            x: titik2.x - titik1.x,
+            y: titik2.y - titik1.y,
+            z: titik2.warna[komponen].R - titik1.warna[komponen].R,
+          };
+          var v2 = {
+            x: titik3.x - titik1.x,
+            y: titik3.y - titik1.y,
+            z: titik3.warna[komponen].R - titik1.warna[komponen].R,
+          };
+          return crossProduct(v1, v2);
+        }
+
+        // Fungsi untuk menggambar segitiga pada canvas
+        function gambarSegitiga(titik, normalR, normalG, normalB) {
+          for (var y = 0; y < canvas.height; y++) {
+            for (var x = 0; x < canvas.width; x++) {
+              // Hitung hasil interpolasi untuk setiap komponen warna
+              var lambda1 =
+                ((titik[1].y - titik[2].y) * (x - titik[2].x) +
+                  (titik[2].x - titik[1].x) * (y - titik[2].y)) /
+                ((titik[1].y - titik[2].y) * (titik[0].x - titik[2].x) +
+                  (titik[2].x - titik[1].x) * (titik[0].y - titik[2].y));
+              var lambda2 =
+                ((titik[2].y - titik[0].y) * (x - titik[2].x) +
+                  (titik[0].x - titik[2].x) * (y - titik[2].y)) /
+                ((titik[1].y - titik[2].y) * (titik[0].x - titik[2].x) +
+                  (titik[2].x - titik[1].x) * (titik[0].y - titik[2].y));
+              var lambda3 = 1 - lambda1 - lambda2;
+
+              // Periksa apakah pixel berada di dalam segitiga
+              if (lambda1 >= 0 && lambda2 >= 0 && lambda3 >= 0) {
+                // Hitung hasil interpolasi untuk setiap komponen warna
+                var interpolatedR = Math.round(
+                  lambda1 * titik[0].warna.R +
+                    lambda2 * titik[1].warna.R +
+                    lambda3 * titik[2].warna.R
+                );
+                var interpolatedG = Math.round(
+                  lambda1 * titik[0].warna.G +
+                    lambda2 * titik[1].warna.G +
+                    lambda3 * titik[2].warna.G
+                );
+                var interpolatedB = Math.round(
+                  lambda1 * titik[0].warna.B +
+                    lambda2 * titik[1].warna.B +
+                    lambda3 * titik[2].warna.B
+                );
+
+                // Atur warna pixel pada canvas
+                ctx.fillStyle = `rgb(${interpolatedR}, ${interpolatedG}, ${interpolatedB})`;
+                ctx.fillRect(x, y, 1, 1);
+              }
+            }
+          }
+        }
+
+        // Fungsi untuk menanggapi klik pada canvas
+        function handleCanvasClick(event) {
+          var rect = canvas.getBoundingClientRect();
+          var x = event.clientX - rect.left;
+          var y = event.clientY - rect.top;
+
+          // Simpan koordinat titik dan warna
+          titik.push({
+            x: x,
+            y: y,
+            warna: {
+              R: parseInt(colorPicker1.value.substr(1, 2), 16),
+              G: parseInt(colorPicker1.value.substr(3, 2), 16),
+              B: parseInt(colorPicker1.value.substr(5, 2), 16),
+            },
+          });
+
+          // Jika sudah ada 3 titik, gambar segitiga dan reset array titik
+          if (titik.length === 3) {
+            // Tentukan warna untuk masing-masing titik
+            titik[0].warna = {
+              R: parseInt(colorPicker1.value.substr(1, 2), 16),
+              G: parseInt(colorPicker1.value.substr(3, 2), 16),
+              B: parseInt(colorPicker1.value.substr(5, 2), 16),
+            };
+            titik[1].warna = {
+              R: parseInt(colorPicker2.value.substr(1, 2), 16),
+              G: parseInt(colorPicker2.value.substr(3, 2), 16),
+              B: parseInt(colorPicker2.value.substr(5, 2), 16),
+            };
+            titik[2].warna = {
+              R: parseInt(colorPicker3.value.substr(1, 2), 16),
+              G: parseInt(colorPicker3.value.substr(3, 2), 16),
+              B: parseInt(colorPicker3.value.substr(5, 2), 16),
+            };
+
+            // Hitung persamaan bidang untuk R, G, dan B
+            var normalR = hitungPersamaanBidang(
+              titik[0],
+              titik[1],
+              titik[2],
+              "R"
+            );
+            var normalG = hitungPersamaanBidang(
+              titik[0],
+              titik[1],
+              titik[2],
+              "G"
+            );
+            var normalB = hitungPersamaanBidang(
+              titik[0],
+              titik[1],
+              titik[2],
+              "B"
+            );
+
+            console.log("Persamaan bidang untuk R:", normalR);
+            console.log("Persamaan bidang untuk G:", normalG);
+            console.log("Persamaan bidang untuk B:", normalB);
+
+            // Gambar segitiga pada canvas
+            gambarSegitiga(titik, normalR, normalG, normalB);
+
+            // Reset array titik
+            titik = [];
+          }
+        }
+
+        // Tambahkan event listener untuk klik pada canvas
+        canvas.addEventListener("click", handleCanvasClick);
+      });
+    </script>
+  </body>
+</html>
