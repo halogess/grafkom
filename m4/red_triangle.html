@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGL Segitiga Merah</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="512" height="512"></canvas>
+    <script>
+      var canvas = document.getElementById("canvas");
+      var gl = canvas.getContext("webgl2");
+
+      var vertices = [
+        0.0,
+        0.5, // Titik A
+        -0.5,
+        -0.5, // Titik B
+        0.5,
+        -0.5, // Titik C
+      ];
+
+      var vertexShaderCode = `#version 300 es
+            in vec2 coordinates;
+            void main(void) {
+                gl_Position = vec4(coordinates, 0.0, 1.0);
+            }`;
+
+      var fragmentShaderCode = `#version 300 es
+            precision mediump float;
+            out vec4 FragColor;
+            void main(void) {
+                FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }`;
+
+      var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+      gl.shaderSource(vertexShader, vertexShaderCode);
+      gl.compileShader(vertexShader);
+
+      var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+      gl.shaderSource(fragmentShader, fragmentShaderCode);
+      gl.compileShader(fragmentShader);
+
+      var shaderProgram = gl.createProgram();
+      gl.attachShader(shaderProgram, vertexShader);
+      gl.attachShader(shaderProgram, fragmentShader);
+      gl.linkProgram(shaderProgram);
+      gl.useProgram(shaderProgram);
+
+      var buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array(vertices),
+        gl.STATIC_DRAW
+      );
+
+      var coordinates = gl.getAttribLocation(shaderProgram, "coordinates");
+      gl.vertexAttribPointer(coordinates, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(coordinates);
+
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    </script>
+  </body>
+</html>
